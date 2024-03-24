@@ -1,0 +1,4 @@
+sqlite:
+  connectionName: "# Unique name for this configuration"
+  description: "# Description of the configuration's purpose and usage"
+  file_location: "# Path to your SQLite database file"

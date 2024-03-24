@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=65.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dblinker"
+version = "0.0.1"
+authors = [
+  { name="Good Boy", email="pythonic@rexbytes.com" },
+]
+description = "A tool to assist with database connections and manage data."
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[tool.setuptools.package-data]
+"dblinker" = ["app_settings.yaml"]
+
+[project.urls]
+"Homepage" = "https://github.com/RexBytes/dblinker"
+"Bug Tracker" = "https://github.com/RexBytes/dblinker"
+
+[project.scripts]
+sqlite2pg = "dblinker:sqlite2pg.sqlite2pg"
+dbconfig ="dblinker:dbconfig_manager.main"
+
