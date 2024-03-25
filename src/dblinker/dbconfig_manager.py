@@ -34,7 +34,7 @@ def load_template(filename):
     Returns:
         The loaded YAML data.
     """
-    with resources.files(f'dbdatamanager.common.templates').joinpath(filename) as path, \
+    with resources.files(f"{app_settings['appPackageName']}.common.templates").joinpath(filename) as path, \
             resources.as_file(path) as config_file, \
             open(config_file, 'r') as file:
         return yaml.safe_load(file)
