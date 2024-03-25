@@ -1,14 +1,18 @@
 import argparse
 from pathlib import Path
 import yaml
-from dblinker.settings_loader import load_app_settings
+#from dblinker.settings_loader import load_app_settings
+from dblinker.settings_manager import SettingsManager
 from importlib import resources
 from tests.database_integration_test import DatabaseIntegrationTest
 import asyncio
 
-# Load application settings
-app_settings = load_app_settings()
-APP_CONFIG_DIR = Path.home() / app_settings['appConfigDir']
+## Load application settings
+##app_settings = load_app_settings()
+##APP_CONFIG_DIR = Path.home() / app_settings['appConfigDir']
+
+settings_manager = SettingsManager()
+
 
 # Define templates globally
 templates = {'sqlite': 'sqlite.yaml', 'pg': 'postgres.yaml'}
