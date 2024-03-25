@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dblinker"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Good Boy", email="pythonic@rexbytes.com" },
 ]
@@ -24,7 +24,7 @@ classifiers = [
 ]
 
 [tool.setuptools.package-data]
-"dblinker" = ["app_settings.yaml"]
+dblinker = ["app_settings.yaml", "common/templates/*.txt"]
 
 [project.urls]
 "Homepage" = "https://github.com/RexBytes/dblinker"
