@@ -1,32 +1,21 @@
 import argparse
 from pathlib import Path
 import yaml
-#from dblinker.settings_loader import load_app_settings
 from dblinker.settings_manager import SettingsManager
 from importlib import resources
 from tests.database_integration_test import DatabaseIntegrationTest
 import asyncio
 
-## Load application settings
-##app_settings = load_app_settings()
-##APP_CONFIG_DIR = Path.home() / app_settings['appConfigDir']
-
-settings_manager = SettingsManager()
-
+my_settings_manager = SettingsManager()
+APP_STUB_CONFIG_DIR = Path.home() / my_settings_manager.settings['appStubConfigDir']
+APP_CONNECTION_CONFIG_DIR = Path('/',*my_settings_manager.settings['appConnectionConfigDir'])
 
 # Define templates globally
 templates = {'sqlite': 'sqlite.yaml', 'pg': 'postgres.yaml'}
 
-
-def ensure_app_config_dir_exists():
-    """Ensure the configuration directory exists."""
-    APP_CONFIG_DIR.mkdir(exist_ok=True)
-
-
 def get_config_file_path(name):
     """Generate the full path for a given configuration file name."""
-    return APP_CONFIG_DIR / f'{name}.yaml'
-
+    return APP_CONNECTION_CONFIG_DIR / f'{name}.yaml'
 
 def load_template(filename):
     """
@@ -38,7 +27,7 @@ def load_template(filename):
     Returns:
         The loaded YAML data.
     """
-    with resources.files(f"{app_settings['appPackageName']}.common.templates").joinpath(filename) as path, \
+    with resources.files(f"{my_settings_manager.settings['appPackageName']}.common.templates").joinpath(filename) as path, \
             resources.as_file(path) as config_file, \
             open(config_file, 'r') as file:
         return yaml.safe_load(file)
@@ -71,6 +60,9 @@ def write_config_template(file_path, config_data):
         file_path: The Path object where the data should be written.
         config_data: The data to write.
     """
+    # Ensure the directory exists before attempting to write the file
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+
     with open(file_path, 'w') as f:
         yaml.dump(config_data, f, sort_keys=False, default_flow_style=False, width=1000)
     print(f'New configuration template created: {file_path}')
@@ -115,7 +107,6 @@ def main():
     test_parser.add_argument('--name', required=True, help='Name of the configuration file to test.')
 
     args = parser.parse_args()
-    ensure_app_config_dir_exists()
 
     if args.command == 'create':
         config_file_path = get_config_file_path(args.name)

@@ -2,6 +2,8 @@ import yaml
 from pathlib import Path
 from copy import deepcopy
 from importlib import resources
+import argparse
+import os
 import shutil
 
 
@@ -36,7 +38,14 @@ class SettingsManager:
 
         if user_config_path.exists():
             with open(user_config_path, "r") as file:
-                return yaml.safe_load(file)
+                user_settings = yaml.safe_load(file)
+                if user_settings is not None:  # Check if user_settings is not None
+                    print("User settings loaded successfully:", user_settings)
+                    return user_settings
+                else:
+                    print("User settings file is empty or invalid:", user_config_path)
+        else:
+            print("User settings file not found:", user_config_path)
         return {}
 
     def save_user_settings(self, new_settings):
@@ -54,9 +63,9 @@ class SettingsManager:
 
         # Write the user settings to the file
         with open(user_config_path, 'w') as file:
-            yaml.safe_dump(self.user_settings, file, default_flow_style=False)
+            yaml.dump(self.user_settings, file, default_flow_style=False)
 
-        # Now, merge the user settings into the current settings to update the class state
+        # Merge the user settings into the current settings to update the class state
         self.merge_settings()
 
     def merge_settings(self):
@@ -71,10 +80,19 @@ class SettingsManager:
         """Ensure the specified directory exists."""
         Path(dir_path).mkdir(parents=True, exist_ok=True)
 
+    def ensure_absolute_path(self, path_list):
+        """Ensure the constructed path is absolute if the path list begins with an empty string."""
+        if path_list and path_list[0] == '':
+            # Prepend the root directory to the path list if not already absolute
+            return Path('/', *path_list)
+        else:
+            # Construct a path normally if the first element is not an empty string
+            return Path(*path_list)
     def setup_user_config(self):
         """Set up user config file and ensure connection config directory exists."""
         # Create the base stub config directory
-        stub_config_dir = Path.home() / self.settings.get('appStubConfigDir')
+        # Example of adjusting the path construction
+        stub_config_dir = self.ensure_absolute_path(self.settings.get('appStubConfigDir', []))
         self.ensure_directory_exists(stub_config_dir)
 
         # Path to the user settings file within the stub config directory
@@ -83,16 +101,51 @@ class SettingsManager:
 
         # Copy the user config template if the user config file does not exist
         if not user_config_path.exists():
-            # Access the template within the package using the package name
-            template_relative_path = Path('common/config/templates') / user_config_filename
+            package_name = self.settings.get('appPackageName')
+            subpath_within_package = 'common.templates'  # Subpath within the package
+            full_package_path = f'{package_name}.{subpath_within_package}'
             try:
-                with resources.path(self.package_name, str(template_relative_path)) as template_path:
-                    shutil.copy(template_path, user_config_path)
+                # Using the resources.open_binary function to open the file for reading
+                with resources.open_binary(full_package_path, user_config_filename) as template_file:
+                    content = template_file.read()
+                # Now write this content to the user_config_path
+                with open(user_config_path, 'wb') as user_file:
+                    user_file.write(content)
             except FileNotFoundError:
-                print(f"Warning: Template file '{user_config_filename}' not found in the package '{self.package_name}'.")
+                print(f"Warning: Template file '{user_config_filename}' not found in the package '{full_package_path}'.")
 
         # The connection config directory should also be ensured to exist
         connection_config_dir = Path.home() / Path(*self.settings.get('appConnectionConfigDir'))
         self.ensure_directory_exists(connection_config_dir)
 
     # Add any additional methods you need for your SettingsManager below...
+
+def main():
+    parser = argparse.ArgumentParser(description="Manage settings for the application.")
+    parser.add_argument("--set-connection-config-dir", type=str, help="Set a new directory for connection configurations, using '~' for the home directory.")
+    parser.add_argument("--reset-connection-config-dir", action="store_true", help="Reset the connection configurations directory to default.")
+
+    args = parser.parse_args()
+
+    settings_manager = SettingsManager()
+
+    if args.set_connection_config_dir:
+        # Expand the user's home directory if path starts with '~'
+        new_dir = Path(args.set_connection_config_dir).expanduser().resolve()
+
+        # Convert directory path to a list of components using the appropriate separator
+        separator = os.sep
+        new_dir_list = str(new_dir).replace('\\', separator).split(separator)
+
+        # Pass the converted directory path to save_user_settings
+        settings_manager.save_user_settings({'appConnectionConfigDir': new_dir_list})
+
+    elif args.reset_connection_config_dir:
+        # Reset connections config directory to default
+        # This logic may need adjustment based on how you want to handle the reset functionality
+        settings_manager.save_user_settings({'appConnectionConfigDir': settings_manager.settings.get('appDefaultConfigDir')})
+
+    print("Settings updated successfully.")
+
+if __name__ == '__main__':
+    main()
