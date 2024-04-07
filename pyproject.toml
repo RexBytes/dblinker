@@ -34,4 +34,5 @@ dblinker = ["app_settings.yaml", "common/templates/*"]
 sqlite2pg = "dblinker:sqlite2pg.sqlite2pg"
 dblinkerconfig ="dblinker:dbconfig_manager.main"
 dblinkersettings="dblinker:settings_manager.main"
+dblinker="dblinker:cli.main"
 

@@ -2,9 +2,6 @@ import yaml
 from pathlib import Path
 from copy import deepcopy
 from importlib import resources
-import argparse
-import os
-import shutil
 
 
 class SettingsManager:
@@ -88,6 +85,7 @@ class SettingsManager:
         else:
             # Construct a path normally if the first element is not an empty string
             return Path(*path_list)
+
     def setup_user_config(self):
         """Set up user config file and ensure connection config directory exists."""
         # Create the base stub config directory
@@ -112,40 +110,11 @@ class SettingsManager:
                 with open(user_config_path, 'wb') as user_file:
                     user_file.write(content)
             except FileNotFoundError:
-                print(f"Warning: Template file '{user_config_filename}' not found in the package '{full_package_path}'.")
+                print(
+                    f"Warning: Template file '{user_config_filename}' not found in the package '{full_package_path}'.")
 
         # The connection config directory should also be ensured to exist
         connection_config_dir = Path.home() / Path(*self.settings.get('appConnectionConfigDir'))
         self.ensure_directory_exists(connection_config_dir)
 
     # Add any additional methods you need for your SettingsManager below...
-
-def main():
-    parser = argparse.ArgumentParser(description="Manage settings for the application.")
-    parser.add_argument("--set-connection-config-dir", type=str, help="Set a new directory for connection configurations, using '~' for the home directory.")
-    parser.add_argument("--reset-connection-config-dir", action="store_true", help="Reset the connection configurations directory to default.")
-
-    args = parser.parse_args()
-
-    settings_manager = SettingsManager()
-
-    if args.set_connection_config_dir:
-        # Expand the user's home directory if path starts with '~'
-        new_dir = Path(args.set_connection_config_dir).expanduser().resolve()
-
-        # Convert directory path to a list of components using the appropriate separator
-        separator = os.sep
-        new_dir_list = str(new_dir).replace('\\', separator).split(separator)
-
-        # Pass the converted directory path to save_user_settings
-        settings_manager.save_user_settings({'appConnectionConfigDir': new_dir_list})
-
-    elif args.reset_connection_config_dir:
-        # Reset connections config directory to default
-        # This logic may need adjustment based on how you want to handle the reset functionality
-        settings_manager.save_user_settings({'appConnectionConfigDir': settings_manager.settings.get('appDefaultConfigDir')})
-
-    print("Settings updated successfully.")
-
-if __name__ == '__main__':
-    main()
