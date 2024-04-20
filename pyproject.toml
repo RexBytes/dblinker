@@ -31,8 +31,5 @@ dblinker = ["app_settings.yaml", "common/templates/*"]
 "Bug Tracker" = "https://github.com/RexBytes/dblinker"
 
 [project.scripts]
-sqlite2pg = "dblinker:sqlite2pg.sqlite2pg"
-dblinkerconfig ="dblinker:dbconfig_manager.main"
-dblinkersettings="dblinker:settings_manager.main"
 dblinker="dblinker:cli.main"
 
