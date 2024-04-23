@@ -1,5 +1,5 @@
 import argparse
-from .cli_toplevel_manager import ToplevelManager
+from .toplevel_manager import ToplevelManager
 
 
 def cli_toplevel_parser():

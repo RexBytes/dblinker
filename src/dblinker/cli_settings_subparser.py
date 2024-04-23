@@ -1,6 +1,6 @@
 import argparse
 from pathlib import Path
-from .cli_settings_manager import SettingsManager
+from .settings_manager import SettingsManager
 
 
 def cli_settings_subparser(subparsers):

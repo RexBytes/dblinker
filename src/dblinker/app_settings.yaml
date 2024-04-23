@@ -1,4 +1,4 @@
 appPackageName: 'dblinker'
-appStubConfigDir: '.rexdblinker'
+appStubConfigDir: ['~','.rexdblinker']
 appStubConfigFile: 'userconfig.yaml'
 appConnectionConfigDir: ['~','.rexdblinker','connectionconfigs']

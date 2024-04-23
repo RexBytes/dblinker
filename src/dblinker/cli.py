@@ -22,6 +22,7 @@ class CLI:
         # settings subparser, and it knows you have given it --helloworld argument.
         # It looks at all the arguments you have given, and the associated default
         # arguments, in this case func=settings_subparser_handle.
+        #
         # The following if statement merely checks if the argument func has been populated,
         # it then calls the function and passes in all the other arguments.
         # The argument helloworld is detected and acted on by the function settings_subparser_handle()

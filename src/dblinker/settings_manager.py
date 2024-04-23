@@ -1,5 +1,6 @@
 import yaml
 from pathlib import Path
+from dblinker.common.utils.pathutils import PathUtils
 from copy import deepcopy
 from importlib import resources
 
@@ -8,6 +9,8 @@ class SettingsManager:
     def __init__(self, settings_filename='app_settings.yaml'):
         # Path to the default settings file
         self.settings_file = Path(__file__).resolve().parent / settings_filename
+        # Path utils
+        self.path_utils = PathUtils()
         # Load settings from the default settings file
         self.settings = self.load_initial_settings()
         # Use the package name from the settings
@@ -18,6 +21,7 @@ class SettingsManager:
         self.user_settings = self.load_user_settings()
         # Merge settings
         self.merge_settings()
+
 
     def load_initial_settings(self):
         """Load initial settings from app_settings.yaml located in the same directory as this class."""
@@ -31,7 +35,8 @@ class SettingsManager:
         # Construct the path to the user settings file based on information from the default settings
         user_config_dir = self.settings.get('appStubConfigDir')
         user_config_filename = self.settings.get('appStubConfigFile')
-        user_config_path = Path.home() / user_config_dir / user_config_filename
+        user_config_path = self.path_utils.construct_path(user_config_dir) / user_config_filename
+        #user_config_path = Path.home() / user_config_dir / user_config_filename
 
         if user_config_path.exists():
             with open(user_config_path, "r") as file:
@@ -53,7 +58,8 @@ class SettingsManager:
         # Then, write the user settings to the user config file
         user_config_dir = self.settings.get('appStubConfigDir')
         user_config_filename = self.settings.get('appStubConfigFile')
-        user_config_path = Path.home() / user_config_dir / user_config_filename
+        user_config_path = self.path_utils.construct_path(user_config_dir) / user_config_filename
+        # user_config_path = Path.home() / user_config_dir / user_config_filename
 
         # Ensure the directory exists
         user_config_path.parent.mkdir(parents=True, exist_ok=True)

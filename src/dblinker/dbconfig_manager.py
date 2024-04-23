@@ -3,14 +3,17 @@ import yaml
 from importlib import resources
 from tests.database_integration_test import DatabaseIntegrationTest
 import asyncio
-from .cli_settings_manager import SettingsManager
+from .settings_manager import SettingsManager
+from dblinker.common.utils.pathutils import PathUtils
 
 
 class DBConfigManager:
     def __init__(self):
+        self.path_utils = PathUtils()
         self.settings_manager = SettingsManager()
-        self.app_stub_config_dir = Path.home() / self.settings_manager.settings['appStubConfigDir']
-        self.app_connection_config_dir = Path('/', *self.settings_manager.settings['appConnectionConfigDir'])
+        self.app_stub_config_dir = self.path_utils.construct_path(  self.settings_manager.settings['appStubConfigDir'] )
+        self.app_connection_config_dir = self.path_utils.construct_path(   self.settings_manager.settings['appConnectionConfigDir'] )
+        #self.app_connection_config_dir = Path('/', *self.settings_manager.settings['appConnectionConfigDir'])
         self.templates = {'sqlite': 'sqlite.yaml', 'pg': 'postgres.yaml'}
 
     def get_config_file_path(self, name):
