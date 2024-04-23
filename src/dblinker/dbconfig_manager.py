@@ -11,19 +11,12 @@ class DBConfigManager:
     def __init__(self):
         self.path_utils = PathUtils()
         self.settings_manager = SettingsManager()
-        self.app_stub_config_dir = self.path_utils.construct_path(  self.settings_manager.settings['appStubConfigDir'] )
-        self.app_connection_config_dir = self.path_utils.construct_path(   self.settings_manager.settings['appConnectionConfigDir'] )
-        #self.app_connection_config_dir = Path('/', *self.settings_manager.settings['appConnectionConfigDir'])
         self.templates = {'sqlite': 'sqlite.yaml', 'pg': 'postgres.yaml'}
 
-    def get_config_file_path(self, name):
-        """Generate the full path for a given configuration file name."""
-        return self.app_connection_config_dir / f'{name}.yaml'
-
-    def load_template(self, filename):
+    def load_template(self, template_filename):
         """Load a YAML configuration template from a file within the package."""
         with resources.files(f"{self.settings_manager.settings['appPackageName']}.common.templates").joinpath(
-                filename) as path, \
+                template_filename) as path, \
                 resources.as_file(path) as config_file, \
                 open(config_file, 'r') as file:
             return yaml.safe_load(file)
@@ -35,11 +28,30 @@ class DBConfigManager:
         else:
             raise ValueError(f'Unsupported database type. Supported types are: {", ".join(self.templates.keys())}')
 
+    def get_config_template_text(self, database_type):
+        """Retrieve the configuration template as raw text based on the database type."""
+        if database_type in self.templates:
+            template_filename = self.templates[database_type]
+            package_path = f"{self.settings_manager.settings['appPackageName']}.common.templates"
+            with resources.files(package_path).joinpath(template_filename) as path, \
+                    resources.as_file(path) as config_file:
+                with open(config_file, 'r') as file:
+                    return file.read()
+        else:
+            raise ValueError(f'Unsupported database type. Supported types are: {", ".join(self.templates.keys())}')
+
     def write_config_template(self, file_path, config_data):
         """Write the configuration template data to a file."""
         file_path.parent.mkdir(parents=True, exist_ok=True)
         with open(file_path, 'w') as f:
             yaml.dump(config_data, f, sort_keys=False, default_flow_style=False, width=1000)
+        print(f'New configuration template created: {file_path}')
+
+    def write_config_template_text(self, file_path, config_text):
+        """Write the configuration template text to a file, preserving all formatting."""
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(file_path, 'w') as f:
+            f.write(config_text)
         print(f'New configuration template created: {file_path}')
 
     def test_connection(self, config_file_path):
