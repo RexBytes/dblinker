@@ -1,6 +1,7 @@
 from psycopg_pool import AsyncConnectionPool
 from .base_connection import PostgresBaseConnection
 
+
 class PGAsyncPoolConnection(PostgresBaseConnection):
     def __init__(self, config, pool_settings=None):
         super().__init__()  # Call super if the base class has an __init__ method
@@ -31,4 +32,3 @@ class PGAsyncPoolConnection(PostgresBaseConnection):
         if self.pool:
             await self.pool.close()
             self.pool = None
-

@@ -5,7 +5,9 @@ from pathlib import Path
 def cli_dbconfig_subparser(subparsers):
     dbconfig_manager = DBConfigManager()
 
+
     dbconfig_parser = subparsers.add_parser('dbconfig', help='Manage database configurations')
+    # Note, the following line is adding a subparser to this subparser which is allowed.
     dbconfig_subparsers = dbconfig_parser.add_subparsers(dest='dbconfig_command', help='dbconfig commands')
 
     # The "create" subcommand
@@ -21,6 +23,7 @@ def cli_dbconfig_subparser(subparsers):
                                                  help='Test the database connection using a configuration file.')
     test_parser.add_argument('--filepath', required=True, help='Path to the configuration file you want to test.')
     test_parser.set_defaults(func=dbconfig_test_handler, dbconfig_manager=dbconfig_manager)
+
 
 
 def dbconfig_create_handler(args):

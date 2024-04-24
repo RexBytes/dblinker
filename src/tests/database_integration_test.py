@@ -1,11 +1,17 @@
-from dblinker.connections.postgres.postgres_connection_factory import PostgresConnectionFactory
+from dblinker.managers.dbconnection_manager import DBConnectionManager
+import yaml
 
 
 class DatabaseIntegrationTest:
-    async def test_postgresql_connection(self, config):
-        # Create a connection object using the factory and configuration
-        factory = PostgresConnectionFactory(config)
-        connection = factory.get_connection()
+    def __init__(self):
+        self.dbconnection_manager = DBConnectionManager()
+
+    async def test_postgresql_connection(self, config_file_path):
+
+        connection = await self.dbconnection_manager.get_database_connection(config_file_path)
+
+        with open(config_file_path, 'r') as config_file:
+            config = yaml.safe_load(config_file)
 
         # Depending on the connection type ('normal', 'pool', 'async', 'async_pool'),
         # the testing approach may vary. Here's a simplified example for 'normal' and 'async':
@@ -18,6 +24,6 @@ class DatabaseIntegrationTest:
             await connection.test_connection()
             await connection.disconnect()
 
-    def test_sqlite_connection(self, connection_settings):
-        print("Testing SQLite connection...")
+    def test_sqlite_connection(self, config_file_path):
+        print(f"Testing SQLite connection... {config_file_path}")
         # SQLite testing logic goes here

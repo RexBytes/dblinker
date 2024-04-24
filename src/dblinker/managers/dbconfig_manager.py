@@ -56,17 +56,19 @@ class DBConfigManager:
 
     def test_connection(self, config_file_path):
         """Test database connection using a configuration file."""
-        print(f'Testing connection using configuration file: {config_file_path}')
-        with open(config_file_path, 'r') as f:
-            config_data = yaml.safe_load(f)
 
+        # Step 1: Determine the database type.
+        with open(config_file_path, 'r') as config_file:
+            config_data = yaml.safe_load(config_file)
         database_type = next(iter(config_data))
-        connection_settings = config_data[database_type]['connection_settings']
+        print(f"{database_type} database config file has been detected...")
+
+        # Step 2:
         integration_tester = DatabaseIntegrationTest()
 
         if database_type == 'postgresql':
-            asyncio.run(integration_tester.test_postgresql_connection(config_data))
+            asyncio.run(integration_tester.test_postgresql_connection(config_file_path))
         elif database_type == 'sqlite':
-            integration_tester.test_sqlite_connection(connection_settings)
+            integration_tester.test_sqlite_connection(config_file_path)
         else:
             print(f"Unsupported database type: {database_type}")

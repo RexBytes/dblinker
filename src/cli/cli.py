@@ -1,6 +1,7 @@
 from .cli_toplevel_parser import cli_toplevel_parser
 from .cli_settings_subparser import cli_settings_subparser
 from .cli_dbconfig_subparser import cli_dbconfig_subparser
+from .cli_db_server_config_subparser import  cli_db_server_config_subparser
 
 
 class CLI:
@@ -12,6 +13,7 @@ class CLI:
         # We start populating the 'sub-parser container' with subparsers.
         cli_settings_subparser(self.subparsers)
         cli_dbconfig_subparser(self.subparsers)
+        cli_db_server_config_subparser(self.subparsers)
 
     def run(self):
         # Parse all arguments from the command line into argparse.

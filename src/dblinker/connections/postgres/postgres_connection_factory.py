@@ -15,21 +15,24 @@ class PostgresConnectionFactory:
     @staticmethod
     def filter_config(config):
         # List of valid psycopg connection parameters
-        valid_keys = ['user', 'password', 'host', 'port', 'dbname', 'sslmode', 'sslcert', 'sslkey', 'sslrootcert', 'connect_timeout', 'application_name', 'keepalives', 'keepalives_idle', 'keepalives_interval', 'keepalives_count']
+        valid_keys = ['user', 'password', 'host', 'port', 'dbname', 'sslmode', 'sslcert', 'sslkey', 'sslrootcert',
+                      'connect_timeout', 'application_name', 'keepalives', 'keepalives_idle', 'keepalives_interval',
+                      'keepalives_count']
         # Filter the config dictionary to include only the valid keys
         return {key: config[key] for key in valid_keys if key in config}
+
     def get_connection(self):
-        #print(self.config)
+        # print(self.config)
         connection_type = self.connection_type
 
         if connection_type == 'normal':
+            # Only connection_settings are needed for a normal connection
             return PGNormalConnection(self.config)
         elif connection_type == 'pool':
             # Merge connection_settings with pool_settings
             return PGPoolConnection(self.config, self.pool_settings)
         elif connection_type == 'async':
             # Merge connection_settings with async_settings
-            #async_config = {**self.config, **self.async_settings}
             return PGAsyncConnection(self.config, post_connect_async_settings=self.async_settings)
         elif connection_type == 'async_pool':
             # Merge connection_settings with async_pool_settings
