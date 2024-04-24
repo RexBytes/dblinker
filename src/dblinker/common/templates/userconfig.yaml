@@ -1,3 +1,0 @@
-# Template: userconfig_template.yaml
-# Uncomment and set the values below to override default configurations
-# appConnectionConfigDir: ['/your', 'custom', 'path', 'to', 'connectionconfigs']

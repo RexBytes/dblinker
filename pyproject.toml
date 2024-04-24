@@ -31,5 +31,5 @@ dblinker = ["app_settings.yaml", "common/templates/*"]
 "Bug Tracker" = "https://github.com/RexBytes/dblinker"
 
 [project.scripts]
-dblinker="dblinker:cli.main"
+dblinker="cli.cli:main"
 
