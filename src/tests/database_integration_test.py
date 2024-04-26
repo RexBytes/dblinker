@@ -16,11 +16,11 @@ class DatabaseIntegrationTest:
                 config = yaml.safe_load(config_file)
 
             if config['postgresql']['connection_type'] in ['normal', 'pool']:
-                with connection:
-                    connection.test_connection()
+                with connection as sync_connection:
+                    sync_connection.test_connection()
             elif config['postgresql']['connection_type'] in ['async', 'async_pool']:
-                async with connection:
-                    await connection.test_connection()
+                async with connection as async_connection:
+                    await async_connection.test_connection()
 
         except Exception as e:
             print(f"An error occurred while testing the connection: {e}")
