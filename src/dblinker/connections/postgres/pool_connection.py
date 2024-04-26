@@ -20,6 +20,7 @@ class PGPoolConnection(PostgresBaseConnection):
         # Construct and return the connection info string
         return " ".join([f"{k}={v}" for k, v in conn_params.items()])
 
+
     def test_connection(self):
         """Tests a connection from the pool."""
         try:
@@ -41,3 +42,11 @@ class PGPoolConnection(PostgresBaseConnection):
         # This method is implemented to satisfy the interface of the abstract base class.
         # The connection pool is initialized in the constructor, so no action is needed here.
         pass
+
+    def __enter__(self):
+        # Return self to make it possible to use 'with PGPoolConnection(config) as conn:'
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # Ensure the pool is properly closed when exiting the context
+        self.disconnect()

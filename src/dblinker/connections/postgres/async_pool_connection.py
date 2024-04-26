@@ -20,6 +20,14 @@ class PGAsyncPoolConnection(PostgresBaseConnection):
         # Initialize AsyncConnectionPool with DSN and any pool-specific settings
         self.pool = AsyncConnectionPool(conninfo=dsn, **self.pool_settings)
 
+    async def __aenter__(self):
+        if not self.pool:
+            await self.connect()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.disconnect()
+
     async def test_connection(self):
         if not self.pool:
             await self.connect()

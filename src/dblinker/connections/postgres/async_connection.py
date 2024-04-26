@@ -23,6 +23,14 @@ class PGAsyncConnection(BaseConnection):
             # Adjust this method based on the actual async settings and their required handling
             setattr(self.connection, setting, value)
 
+    async def __aenter__(self):
+        if self.connection is None or self.connection.closed:
+            await self.connect()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.disconnect()
+
     async def test_connection(self):
         """Tests the asynchronous database connection."""
         if self.connection is None or self.connection.closed:

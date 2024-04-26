@@ -13,6 +13,7 @@ class PGNormalConnection(PostgresBaseConnection):
         # The 'connect' function is used both in psycopg2 and psycopg3 for this purpose.
         self.connection = connect(**self.config)
 
+
     def test_connection(self):
         try:
             with self.connection.cursor() as cur:
@@ -25,3 +26,13 @@ class PGNormalConnection(PostgresBaseConnection):
         # Closes the connection to the database.
         if self.connection:
             self.connection.close()
+
+    def __enter__(self):
+        # Ensures the connection is established when entering the context.
+        if not self.connection:
+            self.connect()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # Closes the connection when exiting the context.
+        self.disconnect()
