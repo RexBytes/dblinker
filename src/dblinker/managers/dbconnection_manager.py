@@ -23,12 +23,14 @@ class DBConnectionManager:
         """Create and return PostgreSQL connection based on the configuration."""
         factory = PostgresConnectionFactory(config_data_dictionary)
         connection = factory.get_connection()
+        #print(connection.__dict__)
 
         if config_data_dictionary['postgresql']['connection_type'] in ['normal', 'pool']:
             connection.connect()
             return connection
         elif config_data_dictionary['postgresql']['connection_type'] in ['async', 'async_pool']:
             await connection.connect()
+            #print(connection.__dict__)
             return connection
 
     def get_sqlite_connection(self, config_data_dictionary):

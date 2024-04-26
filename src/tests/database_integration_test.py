@@ -9,6 +9,7 @@ class DatabaseIntegrationTest:
     async def test_postgresql_connection(self, config_file_path):
 
         connection = await self.dbconnection_manager.get_database_connection(config_file_path)
+        # print(connection.__dict__)
 
         with open(config_file_path, 'r') as config_file:
             config = yaml.safe_load(config_file)
@@ -16,11 +17,9 @@ class DatabaseIntegrationTest:
         # Depending on the connection type ('normal', 'pool', 'async', 'async_pool'),
         # the testing approach may vary. Here's a simplified example for 'normal' and 'async':
         if config['postgresql']['connection_type'] in ['normal', 'pool']:
-            connection.connect()
             connection.test_connection()
             connection.disconnect()
         elif config['postgresql']['connection_type'] in ['async', 'async_pool']:
-            await connection.connect()
             await connection.test_connection()
             await connection.disconnect()
 
