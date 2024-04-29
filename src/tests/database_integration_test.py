@@ -25,15 +25,6 @@ class DatabaseIntegrationTest:
         except Exception as e:
             print(f"An error occurred while testing the connection: {e}")
 
-        # Use the async context manager for managing the lifecycle of the connection
-        # async with connection:
-        #    if config['postgresql']['connection_type'] in ['normal', 'pool']:
-        #        # For synchronous-style connections, we just call the testing directly
-        #        connection.test_connection()  # Assuming this is a synchronous method call
-        #    elif config['postgresql']['connection_type'] in ['async', 'async_pool']:
-        #        # For async-style connections, use await for asynchronous operations
-        #        await connection.test_connection()  # Assuming this is an asynchronous method call
-
     def test_sqlite_connection(self, config_file_path):
         print(f"Testing SQLite connection... {config_file_path}")
         # SQLite testing logic goes here
