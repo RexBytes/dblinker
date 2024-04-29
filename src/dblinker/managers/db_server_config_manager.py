@@ -12,10 +12,11 @@ class DBServerConfigManager:
         database_type = next(iter(config_data_dictionary))
 
         if database_type == 'postgresql':
-            print("postgres detected")
+            #print("postgres detected")
             self.get_postgres_server_config(config_file_path)
         elif database_type == 'sqlite':
-            print("sqlite detected")
+            #print("sqlite detected")
+            pass
         else:
             raise ValueError(f"Unsupported database type: {database_type}")
 

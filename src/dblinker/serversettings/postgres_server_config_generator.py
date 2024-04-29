@@ -29,6 +29,10 @@ class PostgresServerConfigGenerator:
             ip_subnet = '.'.join(host.split('.')[:-1]) + '.0/24'  # Assuming a /24 subnet
             entry = f"hostssl all     all   {ip_subnet}    md5     clientcert={clientcert}"
             entries.append(entry)
+        elif sslmode != 'disable':
+            ip_subnet = '.'.join(host.split('.')[:-1]) + '.0/24'  # Assuming a /24 subnet
+            entry = f"host    all     all   {ip_subnet}    reject"
+            entries.append(entry)
         return entries
 
     def generate_postgresql_conf(self):
@@ -58,14 +62,40 @@ class PostgresServerConfigGenerator:
         return ssl_settings
 
     def print_configurations(self):
-        """Prints the generated server configurations."""
+        """Prints the generated server configurations and provides final instructions if configurations are suggested."""
         if self.config:
             pg_hba_entries = self.generate_pg_hba_entry()
             postgresql_conf_entries = self.generate_postgresql_conf()
-            print("Minimal entries for pg_hba.conf to ensure compatibility:")
-            print('\n'.join(pg_hba_entries) if pg_hba_entries else "No SSL-specific entry needed.")
-            print("\nSuggested minimal entries for postgresql.conf to ensure compatibility:")
-            print('\n'.join(postgresql_conf_entries))
+            print("1) Database type detected: PostgreSQL\n")
+            print("2) Minimal database server settings needed for this config file:\n")
+
+            # Print pg_hba.conf configurations if they exist
+            if len(pg_hba_entries) > 1:  # More than just the header
+                print("   a) pg_hba.conf:" + "\n")
+                print('\n'.join(pg_hba_entries) + "\n")
+            else:
+                print("   a) No entries needed for pg_hba.conf.\n")
+
+            # Print postgresql.conf configurations if they exist
+            if postgresql_conf_entries:
+                print("   b) postgresql.conf:" + "\n")
+                print('\n'.join(postgresql_conf_entries))
+            else:
+                print("   b) No entries needed for postgresql.conf.\n")
+
+            # Add a newline before final instructions
+            print()  # This adds the desired newline
+
+            # Determine which configuration files had suggestions and list them appropriately
+            files_to_check = []
+            if len(pg_hba_entries) > 1:
+                files_to_check.append("pg_hba.conf")
+            if postgresql_conf_entries:
+                files_to_check.append("postgresql.conf")
+
+            if files_to_check:
+                print(f"Please check the following files on your system and ensure that the appropriate settings are applied: {', '.join(files_to_check)}.")
+                print("Ensure that the network ADDRESS matches your network subnet and review all configurations.")
         else:
             print("Configuration data is not available. Please check the file path and contents.")
 
