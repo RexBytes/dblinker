@@ -17,10 +17,18 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Database",
     "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    "psycopg==3.2.1",
+    "psycopg_pool==3.2.2",
+    "PyYAML==6.0.1",
 ]
 
 [tool.setuptools.package-data]
